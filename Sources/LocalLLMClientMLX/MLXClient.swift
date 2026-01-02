@@ -87,12 +87,12 @@ public final actor MLXClient: LLMClient {
 
             let mlxType = convertToToolParameterType(from: type, value: value)
 
-            var extraProperties: [String: Any] = [:]
+            var extraProperties: [String: any Sendable] = [:]
             if let enumValues = value["enum"] as? [String] {
                 extraProperties["enum"] = enumValues
             }
 
-            let finalExtraProperties: [String: Any] = extraProperties.isEmpty ? [:] : extraProperties
+            let finalExtraProperties: [String: any Sendable] = extraProperties.isEmpty ? [:] : extraProperties
             let param: ToolParameter
             if required.contains(key) {
                 param = ToolParameter.required(key, type: mlxType, description: description, extraProperties: finalExtraProperties)
