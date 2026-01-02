@@ -136,6 +136,9 @@ packageTargets.append(contentsOf: [
             .product(name: "MLXLLM", package: "mlx-swift-lm"),
             .product(name: "MLXVLM", package: "mlx-swift-lm"),
         ],
+        swiftSettings: [
+            .swiftLanguageMode(.v5)
+        ]
     ),
     .testTarget(
         name: "LocalLLMClientMLXTests",
