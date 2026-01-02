@@ -75,28 +75,32 @@ public final actor MLXClient: LLMClient {
         guard let properties = parameters["properties"] as? [String: [String: any Sendable]] else {
             return []
         }
-        
+
         let required = parameters["required"] as? [String] ?? []
-        
-        return properties.compactMap { (key: String, value: [String: any Sendable]) -> ToolParameter? in
+
+        var result: [ToolParameter] = []
+        for (key, value) in properties {
             guard let type = value["type"] as? String,
                   let description = value["description"] as? String else {
-                return nil
+                continue
             }
-            
+
             let mlxType = convertToToolParameterType(from: type, value: value)
-            
+
             var extraProperties: [String: Any] = [:]
             if let enumValues = value["enum"] as? [String] {
                 extraProperties["enum"] = enumValues
             }
-            
+
+            let param: ToolParameter
             if required.contains(key) {
-                return ToolParameter.required(key, type: mlxType, description: description, extraProperties: extraProperties.isEmpty ? [:] : extraProperties)
+                param = ToolParameter.required(key, type: mlxType, description: description, extraProperties: extraProperties.isEmpty ? [:] : extraProperties)
             } else {
-                return ToolParameter.optional(key, type: mlxType, description: description, extraProperties: extraProperties.isEmpty ? [:] : extraProperties)
+                param = ToolParameter.optional(key, type: mlxType, description: description, extraProperties: extraProperties.isEmpty ? [:] : extraProperties)
             }
+            result.append(param)
         }
+        return result
     }
     
     private func convertToToolParameterType(from type: String, value: [String: any Sendable]) -> ToolParameterType {
